@@ -73,7 +73,7 @@ mkfifo를 사용해 named pipe를 사용하기 위한 path를 생성한다. mkfi
 
 Child를 fork해서 0인 경우(child인 경우), 각각의 readfd와 writefd를 선언해주고 server와 통신을 하기 위해 server function을 사용한다. 자식이 아닌 경우 반대로 readfd와 writefd를 선언해주고 client와 통신을 하기 위해 client function을 사용한다.
 
-waitpid(childpid,NULL,0)을 통해 child가 terminate 될 때까지 부모 프로세스가 기다리게 된다.
+waitpid(childpid,NULL,0)을 통해 child가 terminate 될 때까지 부모 프로세스가 기다리게 된다. 반복 수행을 위해 fork 부분을 while문을 통해 감싸서 반복 수행을 하도록 했다.
 
 ### 3. server function
 ```
@@ -101,9 +101,6 @@ void server(int readfd,int writefd){
 
 	file_name[0]='.';
 	file_name[1]='/';
-	
-	
-
 	
 	if((n=read(readfd, buff, MAXLINE)) == 0){
 		printf("end-of-file");
@@ -159,6 +156,9 @@ void server(int readfd,int writefd){
 
 }
 ```
+client에서 문자열을 입력받기 때문에 (buff를 통한 문자열 통신), 그리고 pathname을 통해서 파일을 읽거나 쓰기 때문에 client에서 얻어오는 buff의 문자열 가장 앞 부분에 ./을 추가하였다. client에서는 입력값이 파일 이름으로 시작하고, 거기에는 ./이 붙어있지 않다. file_name에 buff에서 읽은 파일 이름을 넣어야 하기 때문에 file_name[2]부터 buff[0]부터의 내용을 넣었다. 쉼표(,)가 오면 파일 액세스 타입을 구별하기 때문에 쉼표가 올때까지 문자열을 대입한다. 읽은 부분 다음 부분이 바로 파일 액세스 타입을 뜻하는 문자이기 때문에 buff[a+1]을 이용해 access_type 변수에 대입했다. 이 변수로 read를 할 것인지 write를 할 것인지 판단한다. Server에서 직접 수행하는 것이 아니라 fork를 통해 자식이 수행하는 구조로 만들기 위해 child를 한번 fork해서 다음 과정을 진행했다. 액세스 타입이 r(read)인지 w(write)인지 if문으로 분기를 사용했다. read인 경우 읽을 byte 수를 추가로 입력받기 때문에 그 부분을 처리하는 반복문을 만들었다. write인 경우 쓸 내용을 추가로 입력받기 때문에 그 입력받는 부분을 파일에 추가하고 byte 수를 계산하는 반복문을 만들었다.
+client와 통신하는데 통신을 buff로 하면 안된다. 따라서 fstr 변수와 fb 변수, file_bytes 변수를 사용해 buff가 아닌 다른 변수로 통신을 하도록 했다.
+
 ### 4. client function
 ```
 void client(int readfd,int writefd){
