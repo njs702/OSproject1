@@ -198,3 +198,4 @@ void client(int readfd,int writefd){
 	
 }
 ```
+client에서는 사용자가 원하는 명령어를 입력하기 때문에, 먼저 입력을 받는 문구를 처리했다. 입력받은 문자열(buff)을 server와 통신하도록 했다. 입력받은 문자열이 server로 전달되는 구조이다. 
