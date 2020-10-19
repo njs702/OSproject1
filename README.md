@@ -69,6 +69,12 @@ int main(int argc, char *argv[]){
 	
 }
 ```
+mkfifo를 사용해 named pipe를 사용하기 위한 path를 생성한다. mkfifo 함수는 성공시 0을 리턴하고 실패시 -1을 리턴하기 때문에 path를 생성하지 못했는데 !EEXIST(이미 프로세스가 존재하지 않는 경우) 처음 path 생성 여부를 판단한다.
+
+Child를 fork해서 0인 경우(child인 경우), 각각의 readfd와 writefd를 선언해주고 server와 통신을 하기 위해 server function을 사용한다. 자식이 아닌 경우 반대로 readfd와 writefd를 선언해주고 client와 통신을 하기 위해 client function을 사용한다.
+
+waitpid(childpid,NULL,0)을 통해 child가 terminate 될 때까지 부모 프로세스가 기다리게 된다.
+
 ### 3. server function
 ```
 void server(int readfd,int writefd){
