@@ -2,7 +2,7 @@
 
 Named pipe code description for communication between processes
 
-1. Header file & Macro & Function
+### 1. Header file & Macro & Function
 ```
 #include <stdio.h>
 #include <fcntl.h>
@@ -21,7 +21,9 @@ Named pipe code description for communication between processes
 
 void client(int,int), server(int,int);
 ```
-2. main function
+mkfifo를 통해 named pipe 생성을 하기 위한 pathname FIFO1, FIFO2 선언. 리눅스 시스템에서 fork() 및 프로세스 통신을 위한 헤더파일들을 추가했다.
+
+### 2. main function
 ```
 int main(int argc, char *argv[]){
 	int readfd, writefd;
@@ -67,7 +69,7 @@ int main(int argc, char *argv[]){
 	
 }
 ```
-3. server function
+### 3. server function
 ```
 void server(int readfd,int writefd){
 	int fd;
@@ -151,7 +153,7 @@ void server(int readfd,int writefd){
 
 }
 ```
-4. client function
+### 4. client function
 ```
 void client(int readfd,int writefd){
 	size_t len;
